@@ -1,0 +1,8 @@
+requests
+requests[security]
+pymongo
+nltk
+pyspotlight
+flask
+flask_cors
+

@@ -1,0 +1,186 @@
+<!-- START SIGMA IMPORTS -->
+<script src="/js/jquery-3.1.1.min.js"></script>
+
+<script src="/js/sigma.js-master/src/sigma.core.js"></script>
+<script src="/js/sigma.js-master/src/conrad.js"></script>
+<script src="/js/sigma.js-master/src/utils/sigma.utils.js"></script>
+<script src="/js/sigma.js-master/src/utils/sigma.polyfills.js"></script>
+<script src="/js/sigma.js-master/src/sigma.settings.js"></script>
+<script src="/js/sigma.js-master/src/classes/sigma.classes.dispatcher.js"></script>
+<script src="/js/sigma.js-master/src/classes/sigma.classes.configurable.js"></script>
+<script src="/js/sigma.js-master/src/classes/sigma.classes.graph.js"></script>
+<script src="/js/sigma.js-master/src/classes/sigma.classes.camera.js"></script>
+<script src="/js/sigma.js-master/src/classes/sigma.classes.quad.js"></script>
+<script src="/js/sigma.js-master/src/classes/sigma.classes.edgequad.js"></script>
+<script src="/js/sigma.js-master/src/captors/sigma.captors.mouse.js"></script>
+<script src="/js/sigma.js-master/src/captors/sigma.captors.touch.js"></script>
+<script src="/js/sigma.js-master/src/renderers/sigma.renderers.canvas.js"></script>
+<script src="/js/sigma.js-master/src/renderers/sigma.renderers.webgl.js"></script>
+<script src="/js/sigma.js-master/src/renderers/sigma.renderers.svg.js"></script>
+<script src="/js/sigma.js-master/src/renderers/sigma.renderers.def.js"></script>
+<script src="/js/sigma.js-master/src/renderers/webgl/sigma.webgl.nodes.def.js"></script>
+<script src="/js/sigma.js-master/src/renderers/webgl/sigma.webgl.nodes.fast.js"></script>
+<script src="/js/sigma.js-master/src/renderers/webgl/sigma.webgl.edges.def.js"></script>
+<script src="/js/sigma.js-master/src/renderers/webgl/sigma.webgl.edges.fast.js"></script>
+<script src="/js/sigma.js-master/src/renderers/webgl/sigma.webgl.edges.arrow.js"></script>
+<script src="/js/sigma.js-master/src/renderers/canvas/sigma.canvas.labels.def.js"></script>
+<script src="/js/sigma.js-master/src/renderers/canvas/sigma.canvas.hovers.def.js"></script>
+<script src="/js/sigma.js-master/src/renderers/canvas/sigma.canvas.nodes.def.js"></script>
+<script src="/js/sigma.js-master/src/renderers/canvas/sigma.canvas.edges.def.js"></script>
+<script src="/js/sigma.js-master/src/renderers/canvas/sigma.canvas.edges.curve.js"></script>
+<script src="/js/sigma.js-master/src/renderers/canvas/sigma.canvas.edges.arrow.js"></script>
+<script src="/js/sigma.js-master/src/renderers/canvas/sigma.canvas.edges.curvedArrow.js"></script>
+<script src="/js/sigma.js-master/src/renderers/canvas/sigma.canvas.edgehovers.def.js"></script>
+<script src="/js/sigma.js-master/src/renderers/canvas/sigma.canvas.edgehovers.curve.js"></script>
+<script src="/js/sigma.js-master/src/renderers/canvas/sigma.canvas.edgehovers.arrow.js"></script>
+<script src="/js/sigma.js-master/src/renderers/canvas/sigma.canvas.edgehovers.curvedArrow.js"></script>
+<script src="/js/sigma.js-master/src/renderers/canvas/sigma.canvas.extremities.def.js"></script>
+<script src="/js/sigma.js-master/src/renderers/svg/sigma.svg.utils.js"></script>
+<script src="/js/sigma.js-master/src/renderers/svg/sigma.svg.nodes.def.js"></script>
+<script src="/js/sigma.js-master/src/renderers/svg/sigma.svg.edges.def.js"></script>
+<script src="/js/sigma.js-master/src/renderers/svg/sigma.svg.edges.curve.js"></script>
+<script src="/js/sigma.js-master/src/renderers/svg/sigma.svg.labels.def.js"></script>
+<script src="/js/sigma.js-master/src/renderers/svg/sigma.svg.hovers.def.js"></script>
+<script src="/js/sigma.js-master/src/middlewares/sigma.middlewares.rescale.js"></script>
+<script src="/js/sigma.js-master/src/middlewares/sigma.middlewares.copy.js"></script>
+<script src="/js/sigma.js-master/src/misc/sigma.misc.animation.js"></script>
+<script src="/js/sigma.js-master/src/misc/sigma.misc.bindEvents.js"></script>
+<script src="/js/sigma.js-master/src/misc/sigma.misc.bindDOMEvents.js"></script>
+<script src="/js/sigma.js-master/src/misc/sigma.misc.drawHovers.js"></script>
+<!-- END SIGMA IMPORTS -->
+<script src="/js/sigma.js-master/plugins/sigma.plugins.filter/sigma.plugins.filter.js"></script>
+<link href='http://fonts.googleapis.com/css?family=Lato:300,700' rel='stylesheet' type='text/css'>
+
+
+<div id="container">
+  <style>
+    #graph-container {
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      position: absolute;
+    }
+  </style>
+  <div id="graph-container"></div>
+</div>
+<script>
+/**
+ * This example is a copy of "basic.html", but with event bindings after.
+ * Open your browser's console to see the "click", "overNode" and
+ * "outNode" events logged.
+ */
+
+var i,
+    s,
+    N = 20,
+    E = 200,
+    g = {
+      nodes: [],
+      edges: []
+    };
+ /*
+for (i = 0; i < N; i++)
+  g.nodes.push({
+    id: 'n' + i,
+    label: 'Node ' + i,
+    x: Math.random(),
+    y: Math.random(),
+    size: Math.random(),
+    color: '#666'
+  });
+
+for (i = 0; i < E; i++)
+  g.edges.push({
+    id: 'e' + i,
+    source: 'n' + (Math.random() * N | 0),
+    target: 'n' + (Math.random() * N | 0),
+    size: Math.random(),
+    type: 'curve',
+    color: '#cccccc',
+    hover_color: '#000'
+  });
+*/
+
+$.getJSON('/buildRelatednessNet/getdatareadyforsigmajs/pub', function(data) {
+/*
+$.getJSON('/buildRelatednessNet/getdatareadyforsigmajs/ds', function(data) {
+*/
+for (var i = 0; i < data['nodes'].length; i++){
+    var obj = data['nodes'][i];
+
+
+    g.nodes.push({
+    id: obj['id'],
+    label: obj['label'],
+    x: obj['x']+25,
+    y: obj['y']+18,
+    //size: obj['size'],
+    size: 4,
+    color: '#666'
+  });
+
+
+  }
+
+  for (var i = 0; i < data['edges'].length; i++){
+    var obj = data['edges'][i];
+
+
+    g.edges.push({
+    id: obj['id'],
+    label: 'Rel = ' + obj['size'],
+    source: obj['source'],
+    target: obj['target'],
+    size: obj['size'],
+    type: 'curve',
+    color: '#ccc',
+    hover_color: '#000'
+  });
+
+
+  }
+
+//}
+
+
+
+
+console.log(g);
+s = new sigma({
+  graph: g,
+  renderer: {
+    container: document.getElementById('graph-container'),
+    type: 'canvas'
+  },
+  settings: {
+    labelThreshold:1,
+    doubleClickEnabled: false,
+    minEdgeSize: 0.5,
+    maxEdgeSize: 4,
+    enableEdgeHovering: true,
+    edgeHoverColor: 'edge',
+    defaultEdgeHoverColor: '#000',
+    edgeHoverSizeRatio: 1,
+    edgeHoverExtremities: true,
+    edgeLabelSize: 'proportional'
+  }
+});
+
+// Bind the events:
+s.bind('overNode outNode clickNode doubleClickNode rightClickNode', function(e) {
+  console.log(e.type, e.data.node.label, e.data.captor);
+});
+s.bind('overEdge outEdge clickEdge doubleClickEdge rightClickEdge', function(e) {
+  console.log(e.type, e.data.edge, e.data.captor);
+});
+s.bind('clickStage', function(e) {
+  console.log(e.type, e.data.captor);
+});
+s.bind('doubleClickStage rightClickStage', function(e) {
+  console.log(e.type, e.data.captor);
+});
+s.cameras[0].goTo({ x: 0, y: 0, angle: 0, ratio: 2 });
+
+});
+</script>
