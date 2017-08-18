@@ -4,9 +4,13 @@ Data Sets Anomaly Detection Service for CKAN Based Governmental Data Portals
 Requirements
 -------
 flask
+
 requests
+
 matplotlib
+
 flask_cors
+
 pandas
 
 
