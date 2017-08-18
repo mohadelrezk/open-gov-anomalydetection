@@ -1,70 +1,152 @@
-## requirments
+# Anomaly Detection Service for RTPA
+
+### Requirements
 
 flask
+requests
+matplotlib
 flask_cors
-
-installation:
-
-virtualenv venv
-pip install -r requirments.txt
-
--------------------------------------------------------
-###Running the service:
+pandas
 
 
-1-Start mongod:
+### Getting Started
 
-> sudo mongod start
+#### Initial Setup
 
-2- ##First time run
+Make a new virtualenv: virtualenv -p python venv
 
+Activate the virtualenv: source venv/bin/activate
 
-A- Spotlight:
+Install dependencies from requirements.txt i.e. pip install -r requirements.txt
 
-> cd ~/workspace/rtpa-dbpedia-spotlight
+Run the service: python rtpa-anomaly-detection.py
 
-> java -Xmx5G -Xms5G -jar dbpedia-spotlight-latest.jar en http://localhost:2222/rest
+> Post Your Data at http://localhost:5000/detectAnomalies/lof
 
+test service: 
 
-> java -jar dbpedia-spotlight-latest.jar en http://srvgal102.deri.ie:8005/rest
-
-
-> screen -S spotlight java -Xmx5G -Xms5G -jar dbpedia-spotlight-latest.jar en http://localhost:2222/rest
-
-B- (collecting and analyzing CKAN instance data) FULL PIPELINE:
-
-> python collect-Network-components.py 'http://data.gov.ie' 'localhost' 27017 'rtpa' 'datasetIDS' 'rtpaF' 0 True
+> curl -X POST -H 'Content-Type:aplication/json' --data-binary @sampleData2.json http://127.0.0.1:5000/detectAnomalies/lof  -v -s
 
 
-3- run websevice and visulization:
+#### After initial setup
 
-> source venv/bin/activate
+Activate the virtualenv: source venv/bin/activate
 
-> python rtpa-publisher-network-builder.py
+Run the service: python rtpa-anomaly-detection.py
+
+> Post Your Data at http://localhost:5000/detectAnomalies/lof
+
+Instead:
+
+screen -S rtpa-anomaly source run.sh
+
+
+## Service Gates
+
+> POST: ****/detectAnomalies/lof
+
+#### Parameters:
+
+x : ploting axis 1
+
+y : ploting axis 2
+
+analysisFeatures : Anomaly detection features/attributues, by default the service uses all the features.
+
+e.g.
+
+{
+
+ "x":"_id",
+
+ "y":"Paid Amt",
+
+ "analysisFeatures":
+
+                    ["Item Description","Paid Amt","Vendor Name",""],
+
+ "result":
+
+        "records": [{"Vendor Name": "HANLEY PEPPER LTD", "Item Description": "CIVIL ENGINEER PROFESSIONAL SERVICES", "_id": 1, "Paid Amt": "17077.09000000000014551915228366851806640625"},
+
+                        {"Vendor Name": "BAM CIVIL LTD.", "Item Description": "CONSTRUCTION OF HOUSING", "_id": 2, "Paid Amt": "485000"}, ......}
+
+#### output:
+
+{ "messages": ["feature ( Latitude ) had NULL values and median is used instead to fill those places!",
+
+"result": [[1.5192301625117677, 1, 17077.09], [0.7581782109282196, 2, 485000.0],
+
+ [0.33291309394387153, 3, 417280.42], [0.33291309394387153, 4, 388000.0], ....... }
 
 
 
+#### POST ****/detectAnomalies/resource_quality
 
-#### Usages:
 
-### Full Pipline Execution
+## Parameters
 
->> python collect-Network-components.py 'http://data.gov.ie' 'localhost' 27017 'rtpa' 'datasetIDS' 'rtpaF' 0 True
 
-arg 1: open data portal (ckan) ex: http://data.gov.ie
+x : ploting axis 1
 
-arg 2: mongodb host ex: localhost
+y : ploting axis 2
 
-arg 3: mongodb port ex: 27017 (int)
+analysisFeatures : Anomaly detection features/attributues, by default the service uses all the features.
 
-arg 4: database name ex: rtpa
+e.g.
 
-arg 5: collection name to store dataset ids ex: datasetIDS
+{
 
-arg 6: colection name to store dataset catalogues and related analysis data ex: rtpaF
+ "x":"_id",
 
-arg 7: (Optional) start from index in case collection was interupted ex: 2000, default is 0 (int)
+ "y":"Paid Amt",
 
-arg 8: (Optional) Run Named Entity Recognition process or not ex: True, default False
+ "analysisFeatures":
 
-arg 9: (Optional) Build Network or not ex: net, By default it will not run unless requested
+                    ["Item Description","Paid Amt","Vendor Name",""],
+
+ "result":
+
+        "records": [{"Vendor Name": "HANLEY PEPPER LTD", "Item Description": "CIVIL ENGINEER PROFESSIONAL SERVICES", "_id": 1, "Paid Amt": "17077.09000000000014551915228366851806640625"},
+
+                        {"Vendor Name": "BAM CIVIL LTD.", "Item Description": "CONSTRUCTION OF HOUSING", "_id": 2, "Paid Amt": "485000"}, ......}
+
+
+## Output
+
+{ "messages": ["feature ( Latitude ) had NULL values and median is used instead to fill those places!",
+
+
+"result":
+
+ {"EstimatedOutturn2013":
+
+  {
+  "totalReadings":29,
+
+  "uniques": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28],
+
+  "nulls": []
+  "nullCount": 11
+  "uniqueCount":0
+
+   },
+
+   .....}
+
+
+
+> GET: ****/detectAnomalies/lof/get_image?
+
+## Parameters:
+
+x=_id
+
+y=Paid%20Amt
+
+url=http%3A%2F%2Fdublin-tet.routetopa.eu%3A8080%2Fapi%2Faction%2Fdatastore_search%3Fresource_id%3D8e761a2a-f16f-4c9e-8d4e-2ebc42f56b4c%26limit%3D99999%0A
+
+
+## output:
+
+![img](anomalies.png)
